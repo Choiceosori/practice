@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Noto Sans KR", system-ui, sans-serif;
+  --font-cute: "Jua", "Noto Sans KR", sans-serif;
+}
+
+html, body {
+  background: #fef9e7;
+  color: #1f2937;
+  -webkit-tap-highlight-color: transparent;
+  word-break: keep-all;
+}
+
+/* 다음에 눌러야 할 곳: 노란 형광 테두리 + 펄스 */
+.glow {
+  position: relative;
+  border-radius: 12px;
+  outline: 4px solid #facc15;
+  outline-offset: 3px;
+  animation: glow-pulse 1.2s ease-in-out infinite;
+  z-index: 1;
+}
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.85); }
+  50% { box-shadow: 0 0 0 14px rgba(250, 204, 21, 0); }
+}
+
+/* 잘못 눌렀을 때 부드러운 흔들림 */
+.shake { animation: shake 0.45s ease-in-out; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+
+/* 가상 키보드 힌트 키 깜빡임 */
+.key-blink { animation: key-blink 0.9s steps(2, start) infinite; }
+@keyframes key-blink {
+  0%, 100% { background: #fb923c; color: white; border-color: #ea580c; }
+  50% { background: #fed7aa; color: #9a3412; border-color: #fb923c; }
+}
+
+.bounce-soft { animation: bounce-soft 2s ease-in-out infinite; }
+@keyframes bounce-soft {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@media print {
+  .no-print { display: none !important; }
+  body { background: white; }
+}
