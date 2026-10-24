@@ -47,20 +47,12 @@ function Intro({ student, setStudent, onStart }) {
         className="mx-auto mt-8 max-w-md space-y-3 rounded-3xl border-4 border-yellow-300 bg-white p-6 shadow-lg"
       >
         <p className="font-cute text-xl">내 이름을 알려줘요 (임명장에 들어가요!)</p>
-        <div className="flex gap-2">
-          <input
-            value={student.klass}
-            onChange={(e) => setStudent((s) => ({ ...s, klass: e.target.value }))}
-            placeholder="1학년 1반"
-            className="w-32 rounded-xl border-2 border-gray-200 px-3 py-3 text-center text-lg outline-none focus:border-amber-400"
-          />
-          <input
-            value={student.name}
-            onChange={(e) => setStudent((s) => ({ ...s, name: e.target.value }))}
-            placeholder="이름"
-            className="min-w-0 flex-1 rounded-xl border-2 border-gray-200 px-3 py-3 text-center text-lg outline-none focus:border-amber-400"
-          />
-        </div>
+        <input
+          value={student.name}
+          onChange={(e) => setStudent((s) => ({ ...s, name: e.target.value }))}
+          placeholder="이름"
+          className="w-full rounded-xl border-2 border-gray-200 px-3 py-3 text-center text-xl outline-none focus:border-amber-400"
+        />
         <button type="submit" className="glow flex w-full items-center justify-center gap-2 rounded-2xl bg-amber-400 py-4 font-cute text-2xl text-amber-950 hover:bg-amber-500">
           시작하기 <ArrowRight />
         </button>
@@ -108,8 +100,7 @@ function Certificate({ student, onRestart }) {
       <div className="relative rounded-3xl border-[10px] border-double border-amber-400 bg-gradient-to-b from-amber-50 to-white p-8 text-center shadow-xl sm:p-12">
         <div className="text-7xl">🏆</div>
         <h1 className="mt-2 font-cute text-5xl text-amber-600 sm:text-6xl">임 명 장</h1>
-        <p className="mt-6 font-cute text-2xl text-gray-700">{student.klass}</p>
-        <p className="font-cute text-4xl text-gray-900 sm:text-5xl">{student.name || '친구'}</p>
+        <p className="mt-6 font-cute text-4xl text-gray-900 sm:text-5xl">{student.name || '친구'}</p>
         <p className="mx-auto mt-6 max-w-md font-cute text-xl leading-relaxed text-gray-700 sm:text-2xl">
           위 어린이는 로그인 버튼 찾기, 아이디·비밀번호 입력, 골뱅이 @ 쓰기, 보안문자 통과, 메일 보내기의 다섯 가지 미션을 모두 완수하였기에
           <br />
@@ -140,7 +131,7 @@ export default function App() {
   const shakeTimer = useRef(null)
   const [sound, setSound] = useState(true)
   const [voice, setVoice] = useState(true)
-  const [student, setStudent] = useState({ klass: '1학년 1반', name: '' })
+  const [student, setStudent] = useState({ name: '' })
   const lastSpoken = useRef('')
   const [whyOpen, setWhyOpen] = useState(false)
   const whyOpenRef = useRef(false) // 설명 카드가 열려 있으면 미션 안내는 말풍선만 바꾸고 읽지 않아요.

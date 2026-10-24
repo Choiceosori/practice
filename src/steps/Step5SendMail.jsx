@@ -19,7 +19,7 @@ export default function Step5SendMail({ say, nudge, onClear, student }) {
   const [body, setBody] = useState('선생님, 숙제를 다 했어요! 확인 부탁드려요. 😊')
   const toRef = useRef(null)
   const subjectRef = useRef(null)
-  const suggestion = `${student.klass} ${student.name} 과제 제출합니다`
+  const suggestion = `${student.name} 과제 제출합니다`
 
   const toCheck = checkTyping(to, TEACHER, { ignoreCase: true })
   const toDone = toCheck.state === 'done'
