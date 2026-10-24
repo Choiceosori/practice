@@ -79,7 +79,7 @@ export default function Step4Captcha({ say, nudge, onClear }) {
 
   const listen = () => {
     const words = [...code].map((c) => SAY[c]).join(', ')
-    if (settings.voice) speak(`보안문자는 ${words} 입니다.`, { rate: 0.75 })
+    if (settings.voice) speak(`보안문자는 ${words} 입니다.`, { rate: 0.7 })
     else say(`보안문자는 ${words} 예요. (읽어주기를 켜면 소리로 들을 수 있어요)`)
   }
 

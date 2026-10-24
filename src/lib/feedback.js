@@ -69,16 +69,49 @@ export const sfx = {
 }
 
 // 브라우저 음성(한국어)으로 안내를 읽어줘요.
-export function speak(text, { rate = 0.95 } = {}) {
+// 친절한 여자 선생님 목소리: 기기에 있는 한국어 여성 음성을 골라 조금 천천히, 부드럽게 말해요.
+const FEMALE_VOICES = ['yuna', 'sora', 'sunhi', 'heami', 'jimin', 'seoyeon', 'female', '여성', 'google 한국']
+const MALE_VOICES = ['injoon', 'hyunsu', 'minjun', 'male', '남성']
+
+let teacherVoice
+function pickTeacherVoice() {
+  const ko = window.speechSynthesis.getVoices().filter((v) => v.lang?.toLowerCase().startsWith('ko'))
+  if (!ko.length) return undefined
+  const name = (v) => v.name.toLowerCase()
+  const female = ko.filter((v) => FEMALE_VOICES.some((k) => name(v).includes(k)))
+  const notMale = ko.filter((v) => !MALE_VOICES.some((k) => name(v).includes(k)))
+  // 자연스러운 고음질(Natural/Premium/Enhanced) 음성을 먼저 써요.
+  const nicest = (list) => list.find((v) => /natural|premium|enhanced|online/i.test(v.name)) || list[0]
+  return nicest(female) || nicest(notMale) || ko[0]
+}
+if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+  teacherVoice = pickTeacherVoice()
+  window.speechSynthesis.addEventListener?.('voiceschanged', () => {
+    teacherVoice = pickTeacherVoice()
+  })
+}
+
+// 기호를 소리 내기 좋게 바꿔요: [로그인] → 로그인, @ → 골뱅이
+function toSpeech(text) {
+  return text
+    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{25CF}]/gu, '')
+    .replace(/[[\]]/g, '')
+    .replace(/@/g, ' 골뱅이 ')
+    .replace(/!/g, '! ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+export function speak(text, { rate = 0.88 } = {}) {
   if (!settings.voice || !('speechSynthesis' in window) || !text) return
   window.speechSynthesis.cancel()
-  const clean = text.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
-  const u = new SpeechSynthesisUtterance(clean)
+  const u = new SpeechSynthesisUtterance(toSpeech(text))
   u.lang = 'ko-KR'
   u.rate = rate
-  u.pitch = 1.15
-  const ko = window.speechSynthesis.getVoices().find((v) => v.lang?.startsWith('ko'))
-  if (ko) u.voice = ko
+  // 여성 음성을 찾았으면 살짝만, 못 찾았으면 조금 더 높여서 따뜻한 느낌을 내요.
+  u.pitch = teacherVoice && FEMALE_VOICES.some((k) => teacherVoice.name.toLowerCase().includes(k)) ? 1.1 : 1.25
+  u.volume = 1
+  if (teacherVoice) u.voice = teacherVoice
   window.speechSynthesis.speak(u)
 }
 
