@@ -108,8 +108,8 @@ export function speak(text, { rate = 0.88 } = {}) {
   const u = new SpeechSynthesisUtterance(toSpeech(text))
   u.lang = 'ko-KR'
   u.rate = rate
-  // 여성 음성을 찾았으면 살짝만, 못 찾았으면 조금 더 높여서 따뜻한 느낌을 내요.
-  u.pitch = teacherVoice && FEMALE_VOICES.some((k) => teacherVoice.name.toLowerCase().includes(k)) ? 1.1 : 1.25
+  // 밝고 높은 톤: 여성 음성이면 1.3, 못 찾았으면 더 높여서 1.45 (최대 2)
+  u.pitch = teacherVoice && FEMALE_VOICES.some((k) => teacherVoice.name.toLowerCase().includes(k)) ? 1.3 : 1.45
   u.volume = 1
   if (teacherVoice) u.voice = teacherVoice
   window.speechSynthesis.speak(u)

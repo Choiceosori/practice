@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Printer, RotateCcw, ArrowRight } from 'lucide-react'
+import { Printer, RotateCcw, ArrowRight, Lightbulb } from 'lucide-react'
 import StepHeader from './components/StepHeader'
 import CharacterHelper from './components/CharacterHelper'
 import Step1PortalHome from './steps/Step1PortalHome'
@@ -8,6 +8,8 @@ import Step2SimpleLogin from './steps/Step2SimpleLogin'
 import Step3GoogleEmail from './steps/Step3GoogleEmail'
 import Step4Captcha from './steps/Step4Captcha'
 import Step5SendMail from './steps/Step5SendMail'
+import WhyCard from './components/WhyCard'
+import { WHY } from './data/why'
 import { celebrate, settings, sfx, speak, stopSpeaking } from './lib/feedback'
 
 const STEPS = [null, Step1PortalHome, Step2SimpleLogin, Step3GoogleEmail, Step4Captcha, Step5SendMail]
@@ -140,6 +142,12 @@ export default function App() {
   const [voice, setVoice] = useState(true)
   const [student, setStudent] = useState({ klass: '1학년 1반', name: '' })
   const lastSpoken = useRef('')
+  const [whyOpen, setWhyOpen] = useState(false)
+  const whyOpenRef = useRef(false) // 설명 카드가 열려 있으면 미션 안내는 말풍선만 바꾸고 읽지 않아요.
+  const helperRef = useRef(helper)
+  useEffect(() => {
+    helperRef.current = helper
+  }, [helper])
 
   useEffect(() => {
     settings.sound = sound
@@ -149,6 +157,7 @@ export default function App() {
 
   const say = useCallback((message, mood = 'normal') => {
     setHelper({ message, mood })
+    if (whyOpenRef.current) return
     if (lastSpoken.current !== message) {
       lastSpoken.current = message
       speak(message)
@@ -173,8 +182,21 @@ export default function App() {
     stopSpeaking()
     lastSpoken.current = ''
     setShowSuccess(false)
+    openWhy(Boolean(WHY[n]))
     setStep(n)
     window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const openWhy = (open) => {
+    whyOpenRef.current = open
+    setWhyOpen(open)
+  }
+
+  const closeWhy = () => {
+    openWhy(false)
+    // 카드를 닫으면 이번 단계의 미션 안내를 읽어줘요.
+    lastSpoken.current = helperRef.current.message
+    speak(helperRef.current.message)
   }
 
   const clearStep = useCallback(() => {
@@ -219,7 +241,17 @@ export default function App() {
       {Step && (
         <main className="mx-auto max-w-5xl px-3 pb-16 pt-4 sm:px-4">
           <div className="mb-4">
-            <p className="mb-1 font-cute text-lg text-amber-600">{step}단계 미션</p>
+            <div className="mb-1 flex items-center justify-between gap-2">
+              <p className="font-cute text-lg text-amber-600">{step}단계 미션</p>
+              {WHY[step] && (
+                <button
+                  onClick={() => openWhy(true)}
+                  className="flex items-center gap-1 rounded-full bg-sky-100 px-3 py-1 font-cute text-sky-700 hover:bg-sky-200"
+                >
+                  <Lightbulb size={16} /> 왜 그럴까요?
+                </button>
+              )}
+            </div>
             <CharacterHelper message={helper.message} mood={helper.mood} />
           </div>
           <AnimatePresence mode="wait">
@@ -233,6 +265,8 @@ export default function App() {
       )}
 
       {step === 6 && <Certificate student={student} onRestart={restart} />}
+
+      <AnimatePresence>{whyOpen && WHY[step] && <WhyCard key={step} why={WHY[step]} onDone={closeWhy} />}</AnimatePresence>
 
       <AnimatePresence>{showSuccess && step < 5 && <SuccessModal step={step} onNext={() => goTo(step + 1)} />}</AnimatePresence>
     </div>
